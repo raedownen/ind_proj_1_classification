@@ -28,120 +28,125 @@ warnings.filterwarnings("ignore")
 #go to : https://rptsvr1.tea.texas.gov/adhocrpt/Disciplinary_Data_Products/Download_All_Districts.html
 #download the csv for 2018/19, 2019/20, 2020/21, and 2021/22 School Years
 #upload csv files:
-df22 = pd.read_csv('DISTRICT_summary_22.csv')
-df21 = pd.read_csv('DISTRICT_summary_21.csv')
-df20 = pd.read_csv('DISTRICT_summary_20.csv')
-df19 = pd.read_csv('DISTRICT_summary_19.csv')
 
+df22 = pd.read_csv('CAMPUS_summary_22.csv')
+df21 = pd.read_csv('CAMPUS_summary_21.csv')
+df20 = pd.read_csv('CAMPUS_summary_20.csv')
+df19 = pd.read_csv('CAMPUS_summary_19.csv')
+df18 = pd.read_csv('CAMPUS_summary_18.csv')
 ###################################################################################
 ##################################### PREP DATA ###################################
 ###################################################################################
 
 
 #for each school year
-def prep22(df):
+def get_prep22(df):
     global df22
-    df22=df22.rename(columns={'AGGREGATION LEVEL':'agg_level', 'REGION':'region', 'DISTNAME':'dist_name', 
-                              'DISTRICT':'district_num', 'CHARTER_STATUS':'charter_status', 'SECTION':'section', 
-                              'HEADING':'heading', 'HEADING NAME':'heading_name'})
-    df22['charter_encoded'] = df22.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 'TRADITIONAL ISD/CSD':0})
+    df22=df22.rename(columns=
+                     {'AGGREGATION LEVEL':'agg_level','CAMPUS':'campus_number','REGION':'region',
+                      'DISTRICT NAME AND NUMBER':'dist_name_num','CHARTER_STATUS':'charter_status',
+                      'CAMPUS NAME AND NUMBER': 'campus_name_num', 'SECTION': 'section',
+                      'HEADING':'heading','HEADING NAME': 'heading_name','YR22':'student_count'})
+    df22['charter_encoded'] = df22.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 
+                                                       'TRADITIONAL ISD/CSD':0})
     df22=df22[(df22.heading == 'A01') | (df22.heading ==  'A03')]
-    df22 = df22[df22['count'] != -999]
     df22.dropna()
     df22=df22.drop_duplicates()
-    df22pivot=df22.pivot(index='district_num', columns='heading_name', values= 'count').dropna()
-    df22=df22.merge(df22pivot,how= 'right', on= 'district_num')
-    df22=df22.drop(columns=['heading', 'heading_name','count', 'agg_level', 'region', 'district_num', 'section',
-                            'charter_status'])
-    df22=df22.rename(columns={'DISTRICT CUMULATIVE YEAR END ENROLLMENT': 'enrollment', 
-                              'DISTRICT DISCIPLINE RECORD COUNT':'disciplined'})
-    df22=df22.drop_duplicates()
-    df22.dropna()
-    df22=df22.reset_index(drop=True)
-    df22['discipline_percent']= ((df22['disciplined']/df22['enrollment'])*100)
+    df22=df22[df22['student_count'] != '-999']
+    df22['student_count']= df22['student_count'].str.replace("<", "")
+    df22['student_count'] = df22['student_count'].astype(float)
+    dfpivot=df22.pivot(index='campus_number', columns='heading', values= 'student_count').dropna()
+    df22=df22.merge(dfpivot,how= 'right', on= 'campus_number')
+    df22=df22.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count'})
+    df22['discipline_percent']= ((df22['discipline_count']/df22['student_enrollment'])*100)
     df22=df22.round({'discipline_percent': 0})
+    df22=df22.drop(columns=['agg_level', 'campus_number', 'region', 'charter_status', 'dist_name_num',                               'section', 'heading','heading_name', 'student_count'])
 
-#call function with: prep22(df22)
-
-def prep21(df):
+def get_prep21(df):
     global df21
-    df21=df21.rename(columns={'AGGREGATION LEVEL':'agg_level', 'REGION':'region', 'DISTNAME':'dist_name', 
-                              'DISTRICT':'district_num', 'CHARTER_STATUS':'charter_status', 'SECTION':'section', 
-                              'HEADING':'heading', 'HEADING NAME':'heading_name'})
-    df21['charter_encoded'] = df21.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 'TRADITIONAL ISD/CSD':0})
+    df21=df21.rename(columns=
+                     {'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 'REGION':'region',                           'DISTRICT NAME AND NUMBER': 'dist_name_num','CHARTER_STATUS':'charter_status', 
+                      'CAMPUS NAME AND     NUMBER': 'campus_name_num', 'SECTION': 'section',                                   'HEADING':'heading','HEADING NAME': 'heading_name', 'YR21':'student_count'})
+    df21['charter_encoded'] = df21.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 
+                                                       'TRADITIONAL ISD/CSD':0})
     df21=df21[(df21.heading == 'A01') | (df21.heading ==  'A03')]
-    df21 = df21[df21['count'] != -999]
     df21.dropna()
     df21=df21.drop_duplicates()
-    df21pivot=df21.pivot(index='district_num', columns='heading_name', values= 'count').dropna()
-    df21=df21.merge(df21pivot,how= 'right', on= 'district_num')
-    df21=df21.drop(columns=['heading', 'heading_name','count', 'agg_level', 'region', 'district_num', 
-                            'section','charter_status'])
-    df21=df21.rename(columns={'DISTRICT CUMULATIVE YEAR END ENROLLMENT': 'enrollment', 
-                              'DISTRICT DISCIPLINE RECORD COUNT':'disciplined'})
-    df21=df21.drop_duplicates()
-    df21.dropna()
-    df21=df21.reset_index(drop=True)
-    df21['discipline_percent']= ((df21['disciplined']/df21['enrollment'])*100)
+    df21=df21[df21['student_count'] != '-999']
+    df21['student_count']= df21['student_count'].str.replace("<", "")
+    df21['student_count'] = df21['student_count'].astype(float)
+    dfpivot=df21.pivot(index='campus_number', columns='heading', values= 'student_count').dropna()
+    df21=df21.merge(dfpivot,how= 'right', on= 'campus_number')
+    df21=df21.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count'})
+    df21['discipline_percent']= ((df21['discipline_count']/df21['student_enrollment'])*100)
     df21=df21.round({'discipline_percent': 0})
+    df21=df21.drop(columns=['agg_level', 'campus_number', 'region', 'charter_status', 'dist_name_num',                               'section', 'heading','heading_name', 'student_count'])
 
-#call function with: prep21(df21)
-
-def prep20(df):
+def get_prep20(df):
     global df20
-    df20=df20.rename(columns={'AGGREGATION LEVEL':'agg_level', 'REGION':'region', 'DISTNAME':'dist_name', 
-                              'DISTRICT':'district_num', 'CHARTER_STATUS':'charter_status', 'SECTION':'section', 
-                              'HEADING':'heading', 'HEADING NAME':'heading_name'})
-    df20['charter_encoded'] = df20.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 'TRADITIONAL ISD/CSD':0})
+    df20=df20.rename(columns=
+                     {'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 'REGION':'region', 
+                      'DISTRICT NAME AND NUMBER': 'dist_name_num','CHARTER_STATUS':'charter_status',                           'CAMPUS NAME AND NUMBER': 'campus_name_num', 'SECTION': 'section',                                       'HEADING':'heading','HEADING NAME': 'heading_name', 'YR20':'student_count'})
+    df20['charter_encoded'] = df20.charter_status.map({'OPEN ENROLLMENT CHARTER': 1,         
+                                                       'TRADITIONAL ISD/CSD':0})
     df20=df20[(df20.heading == 'A01') | (df20.heading ==  'A03')]
-    df20 = df20[df20['count'] != -999]
     df20.dropna()
     df20=df20.drop_duplicates()
-    df20pivot=df20.pivot(index='district_num', columns='heading_name', values= 'count').dropna()
-    df20=df20.merge(df20pivot,how= 'right', on= 'district_num')
-    df20=df20.drop(columns=['heading', 'heading_name','count', 'agg_level', 'region', 'district_num', 
-                            'section','charter_status'])
-    df20=df20.rename(columns={'DISTRICT CUMULATIVE YEAR END ENROLLMENT': 'enrollment', 
-                              'DISTRICT DISCIPLINE RECORD COUNT':'disciplined'})
-    df20=df20.drop_duplicates()
-    df20.dropna()
-    df20=df20.reset_index(drop=True)
-    df20['discipline_percent']= ((df20['disciplined']/df20['enrollment'])*100)
+    df20=df20[df20['student_count'] != '-999']
+    df20['student_count']= df20['student_count'].str.replace("<", "")
+    df20['student_count'] = df20['student_count'].astype(float)
+    dfpivot=df20.pivot(index='campus_number', columns='heading', values= 'student_count').dropna()
+    df20=df20.merge(dfpivot,how= 'right', on= 'campus_number')
+    df20=df20.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count'})
+    df20['discipline_percent']= ((df20['discipline_count']/df20['student_enrollment'])*100)
     df20=df20.round({'discipline_percent': 0})
+    df20=df20.drop(columns=['agg_level', 'campus_number', 'region', 'charter_status', 'dist_name_num',                               'section', 'heading','heading_name', 'student_count'])
 
-#call function with: prep20(df20)
-
-def prep19(df):
+def get_prep19(df):
     global df19
-    df19=df19.rename(columns={'AGGREGATION LEVEL':'agg_level', 'REGION':'region', 'DISTNAME':'dist_name',                                                     'DISTRICT':'district_num', 'CHARTER_STATUS':'charter_status', 'SECTION':'section',                                               'HEADING':'heading', 'HEADING NAME':'heading_name'})
-    df19['charter_encoded'] = df19.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 'TRADITIONAL ISD/CSD':0})
+    df19=df19.rename(columns=
+                     {'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 'REGION': 'region',                           'DISTRICT NAME AND NUMBER': 'dist_name_num','CHARTER_STATUS':'charter_status',                           'CAMPUS NAME AND NUMBER': 'campus_name_num', 'SECTION': 'section',                                       'HEADING':'heading','HEADING NAME': 'heading_name', 'YR19':'student_count'})
+    df19['charter_encoded'] = df19.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 
+                                                       'TRADITIONAL ISD/CSD':0})
     df19=df19[(df19.heading == 'A01') | (df19.heading ==  'A03')]
-    df19 = df19[df19['count'] != -999]
     df19.dropna()
     df19=df19.drop_duplicates()
-    df19pivot=df19.pivot(index='district_num', columns='heading_name', values= 'count').dropna()
-    df19=df19.merge(df19pivot,how= 'right', on= 'district_num')
-    df19=df19.drop(columns=['heading', 'heading_name','count', 'agg_level', 'region', 'district_num',                                                       'section','charter_status'])
-    df19=df19.rename(columns={'DISTRICT CUMULATIVE YEAR END ENROLLMENT': 'enrollment', 
-                          'DISTRICT DISCIPLINE RECORD COUNT':'disciplined'})
-    df19=df19.drop_duplicates()
-    df19.dropna()
-    df19=df19.reset_index(drop=True)
-    df19['discipline_percent']= ((df19['disciplined']/df19['enrollment'])*100)
+    df19=df19[df19['student_count'] != '-999']
+    df19['student_count']= df19['student_count'].str.replace("<", "")
+    df19['student_count'] = df19['student_count'].astype(float)
+    dfpivot=df19.pivot(index='campus_number', columns='heading', values= 'student_count').dropna()
+    df19=df19.merge(dfpivot,how= 'right', on= 'campus_number')
+    df19=df19.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count'})
+    df19['discipline_percent']= ((df19['discipline_count']/df19['student_enrollment'])*100)
     df19=df19.round({'discipline_percent': 0})
+    df19=df19.drop(columns=['agg_level', 'campus_number', 'region', 'charter_status', 'dist_name_num',                               'section', 'heading','heading_name', 'student_count'])
 
-#call function with: prep19(df19)
-
-def df_combine(a,b,c,d):
-    df=pd.concat([df19,df20,df21,df22], ignore_index=True)
-    return(df)
+def get_prep18(df):
+    global df18
+    df18=df18.rename(columns=
+                     {'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 'REGION': 'region',
+                      'DISTRICT NAME AND NUMBER': 'dist_name_num','CHARTER_STATUS':'charter_status',
+                      'CAMPUS NAME AND NUMBER': 'campus_name_num', 'SECTION':'section',
+                      'HEADING':'heading','HEADING NAME': 'heading_name', 'YR18':'student_count'})
+    df18['charter_encoded'] = df18.charter_status.map({'OPEN ENROLLMENT CHARTER': 1, 
+                                                       'TRADITIONAL ISD/CSD':0})
+    df18=df18[(df18.heading == 'A01') | (df18.heading ==  'A03')]
+    df18.dropna()
+    df18=df18.drop_duplicates()
+    df18=df18[df18['student_count'] != '-999']
+    df18['student_count']= df18['student_count'].str.replace("<", "")
+    df18['student_count'] = df18['student_count'].astype(float)
+    dfpivot=df18.pivot(index='campus_number', columns='heading', values= 'student_count').dropna()
+    df18=df18.merge(dfpivot,how= 'right', on= 'campus_number')
+    df18=df18.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count'})
+    df18['discipline_percent']= ((df18['discipline_count']/df18['student_enrollment'])*100)
+    df18=df18.round({'discipline_percent': 0})
+    df18=df18.drop(columns=['agg_level', 'campus_number', 'region', 'charter_status', 'dist_name_num',                               'section', 'heading','heading_name', 'student_count'])
 
 #call function with: df_combine(df19,df20,df21,df22)
-
-
-
-#combine the files
-df= pd.concat([df19,df20,df21,df22], ignore_index=True)
+def df_combine(a,b,c,d, e):
+    df=pd.concat([df18,df19,df20,df21,df22], ignore_index=True)
+    return(df)
 
 ###################################################################################
 #################################### SPLIT DATA ###################################
