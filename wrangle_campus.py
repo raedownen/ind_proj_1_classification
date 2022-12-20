@@ -18,30 +18,11 @@ import requests
 import seaborn as sns
 import statsmodels.api as sm
 import doctest
+import pdb
 import warnings
 warnings.filterwarnings("ignore")
 
-
-###################################################################################
-#################################### ACQUIRE DATA #################################
-###################################################################################
-
-#go to : https://rptsvr1.tea.texas.gov/adhocrpt/Disciplinary_Data_Products/Download_All_Districts.html
-#download the csv for 2018/19, 2019/20, 2020/21, and 2021/22 School Years
-#upload csv files:
-
-df22 = pd.read_csv('CAMPUS_summary_22.csv')
-df21 = pd.read_csv('CAMPUS_summary_21.csv')
-df20 = pd.read_csv('CAMPUS_summary_20.csv')
-df19 = pd.read_csv('CAMPUS_summary_19.csv')
-df18 = pd.read_csv('CAMPUS_summary_18.csv')
-    
-###################################################################################
-##################################### PREP DATA ###################################
-###################################################################################
-
-
-#for each school year
+#######################################################################################################
 def get_prep22(df):
     global df22
     df22=df22.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
@@ -147,8 +128,7 @@ def get_prep19(df):
     
     
     
-def get_prep18(df):
-    global df18
+def get_prep18(df18):
     df18=df18.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
                               'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
                               'CHARTER_STATUS':'charter_status','CAMPUS NAME AND NUMBER': 
@@ -171,33 +151,3 @@ def get_prep18(df):
     df18.dropna()
     df18=df18.drop_duplicates()
     df18=df18.reset_index(drop=True)
-    
-    
-#call function with: df_combine(df19,df20,df21,df22)
-def df_combine(a,b,c,d, e):
-    df=pd.concat([df18,df19,df20,df21,df22], ignore_index=True)
-    return()
-
-###################################################################################
-#################################### SPLIT DATA ###################################
-###################################################################################
-
-#Step 5: Test and train dataset split
-def split_tea_data(df):
-    '''
-    This function performs split on tea data, stratify charter_encoded.
-    Returns train, validate, and test dfs.
-    '''
-    train_validate, test = train_test_split(df, test_size=.2, 
-                                        random_state=123, 
-                                        stratify=df.charter_encoded)
-    train, validate = train_test_split(train_validate, test_size=.3, 
-                                   random_state=123, 
-                                   stratify=train_validate.charter_encoded)
-    return train, validate, test
-
-#train, validate, test= split_tea_data(df) 
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
