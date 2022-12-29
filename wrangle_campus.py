@@ -25,7 +25,7 @@ warnings.filterwarnings("ignore")
 #######################################################################################################
 def get_prep22(df):
     global df22
-    df22=dfcamp22.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
+    df22=df22.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
                               'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
                               'CHARTER_STATUS':'charter_status','CAMPUS NAME AND NUMBER': 
                               'campus_name_num', 'SECTION': 'section','HEADING':'heading',
