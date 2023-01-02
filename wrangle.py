@@ -42,7 +42,7 @@ df18 = pd.read_csv('CAMPUS_summary_18.csv')
 
 
 #for each school year
-def get_prep22(df):
+def prep22(df):
     global df22
     df22=df22.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
                               'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
@@ -66,9 +66,9 @@ def get_prep22(df):
     df22.dropna()
     df22=df22.drop_duplicates()
     df22=df22.reset_index(drop=True)
+    return(df)
     
-    
-def get_prep21(df):
+def prep21(df):
     global df21
     df21=df21.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
                               'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
@@ -94,7 +94,7 @@ def get_prep21(df):
     df21=df21.reset_index(drop=True)
     
     
-def get_prep20(df):
+def prep20(df):
     global df20
     df20=df20.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
                               'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
@@ -120,7 +120,7 @@ def get_prep20(df):
     df20=df20.reset_index(drop=True)
     
     
-def get_prep19(df):
+def prep19(df):
     global df19
     df19=df19.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
                               'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
@@ -147,7 +147,7 @@ def get_prep19(df):
     
     
     
-def get_prep18(df):
+def prep18(df):
     global df18
     df18=df18.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
                               'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
@@ -173,7 +173,7 @@ def get_prep18(df):
     df18=df18.reset_index(drop=True)
     
     
-#call function with: df_combine(df19,df20,df21,df22)
+#call function with: df_combine(df18, df19,df20,df21,df22)
 def df_combine(a,b,c,d, e):
     df=pd.concat([df18,df19,df20,df21,df22], ignore_index=True)
     return()

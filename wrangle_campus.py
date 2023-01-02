@@ -17,6 +17,7 @@ import pandas as pd
 import requests
 import seaborn as sns
 import statsmodels.api as sm
+import doctest
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -34,28 +35,18 @@ df21 = pd.read_csv('CAMPUS_summary_21.csv')
 df20 = pd.read_csv('CAMPUS_summary_20.csv')
 df19 = pd.read_csv('CAMPUS_summary_19.csv')
 df18 = pd.read_csv('CAMPUS_summary_18.csv')
-
+    
 ###################################################################################
 ##################################### PREP DATA ###################################
 ###################################################################################
-# for each school year
-def prep22(df):
-    global df22
-    df22['charter_encoded'] = df22.charter_status.map({'OPEN ENROLLMENT CHARTER':1, 'TRADITIONAL ISD/CSD':0})
-    df22=df22[(df22.heading == 'A01') | (df22.heading == 'A03')]
-    df22=df22[df22['student_count'] != -999]
-    df22['student_count']= df22['student_count'].str.replace("<", "")
-    df22['student_count'] = df22['student_count'].astype(float)
-    df22.dropna()
-    df22=df22.drop_duplicates()
-    df22pivot=df22.pivot(index='campus_number', columns='heading', values='student_count').dropna()
-    df22=df22.merge(df22pivot,how= 'right', on= 'campus_number')
-    df22=df22.drop(columns=['agg_level', 'campus_number', 'region', 'charter_status', 
-                            'dist_name_num', 'student_count','section', 'heading',
-                            'heading_name', 'student_count'])
-    df22=df22.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count'})
-    df22=df22.drop_duplicates()
-    df22.dropna()
-    df22=df22.reset_index(drop=True)
-    df22['discipline_percent']= ((df22['discipline_count']/df22['student_enrollment'])*100)
-    df22=df22.round({'discipline_percent': 0})
+
+
+#for each school year
+def prep22(df22):
+    df22.rename(columns={'AGGREGATION LEVEL': 'agg_level', 'CAMPUS':'campus_number', 
+                              'REGION':'region','DISTRICT NAME AND NUMBER': 'dist_name_num',
+                              'CHARTER_STATUS':'charter_status','CAMPUS NAME AND NUMBER': 
+                              'campus_name_num', 'SECTION': 'section','HEADING':'heading',
+                              'HEADING NAME': 'heading_name', 'YR22':'student_count'})
+    
+    return(df22)
