@@ -63,7 +63,7 @@ def campus_prep(df):
                                                        'TRADITIONAL ISD/CSD':0})
     
     #filters the dataset, so that only A01 and A03 are listed
-    df=df[(df.heading == 'A01') | (df.heading ==  'A03')]
+    df=df[(df.heading == 'A01') | (df.heading ==  'A03') | (df.heading ==  'H06')]
 
     # filters out any student count that is -999 which is TEA's masked count
     df=df[df['student_count'] != '-999']
@@ -81,14 +81,18 @@ def campus_prep(df):
     df=df.merge(pivot,how= 'right', on= 'campus_number')
 
     #renames A01 and A03
-    df=df.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count'})
+    df=df.rename(columns={'A01': 'student_enrollment', 'A03':'discipline_count', 'H06':'iss'})
 
     #creates a new column by dividing the discipline by enrolled
     df['discipline_percent']= ((df['discipline_count']/df['student_enrollment'])*100)
 
+    #creates a new column based on iss divided by student enrollment
+    df['iss_percent']= ((df['iss']/df['student_enrollment'])*100)
+    
     #rounds the percent
     df=df.round({'discipline_percent': 0})
-
+    df=df.round({'iss_percent':0})
+    
     # removes unnecessary columns
     df=df.drop(columns=['agg_level', 'campus_number', 'region', 'charter_status', 
                                 'dist_name_num', 'student_count','section', 'heading',
